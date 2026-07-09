@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+.next/
+out/
+build/
+
+# Env files
+.env
+.env.local
+.env.*.local
+!*.env.example
+
+# Testing
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+
+# Misc
+*.tsbuildinfo
+.turbo/
