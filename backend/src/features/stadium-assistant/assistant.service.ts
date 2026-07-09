@@ -56,9 +56,14 @@ export async function generateAssistantReply(
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error(
-      { error: errorMessage, provider: provider.name, stadiumId: input.stadiumId },
-      "AI provider call failed"
-    );
+  {
+    error: errorMessage,
+    stack: error instanceof Error ? error.stack : undefined,
+    provider: provider.name,
+    stadiumId: input.stadiumId,
+  },
+  "AI provider call failed"
+);
     throw error;
   }
 }
