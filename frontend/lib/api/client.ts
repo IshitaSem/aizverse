@@ -3,7 +3,7 @@
  * auth headers, one place to handle non-2xx responses consistently, and one
  * place to point at a different API base URL per environment.
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://aizverse-production.up.railway.app";
 
 export class ApiError extends Error {
   constructor(
