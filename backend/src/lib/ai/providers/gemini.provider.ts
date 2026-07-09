@@ -35,10 +35,19 @@ export class GeminiProvider implements AiProvider {
       },
     });
 
-    const history = conversational.slice(0, -1).map((m) => ({
-      role: m.role === "assistant" ? ("model" as const) : ("user" as const),
-      parts: [{ text: m.content }],
-    }));
+   const history = conversational
+  .slice(0, -1)
+  .filter((m, index) => {
+    // Gemini requires conversation history to start with user
+    if (index === 0 && m.role !== "user") {
+      return false;
+    }
+    return true;
+  })
+  .map((m) => ({
+    role: m.role === "assistant" ? ("model" as const) : ("user" as const),
+    parts: [{ text: m.content }],
+  }));
 
     const lastMessage = conversational.at(-1);
     if (!lastMessage) {
