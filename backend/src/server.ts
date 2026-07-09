@@ -6,10 +6,11 @@ import { connectDatabase } from "./config/db.js";
 async function main(): Promise<void> {
   await connectDatabase();
 
-  const app = createApp();
-  const server = app.listen(env.PORT, () => {
-    logger.info(`AIZVerse API listening on port ${env.PORT} [${env.NODE_ENV}]`);
-  });
+ const app = createApp();
+
+const server = app.listen(env.PORT, "0.0.0.0", () => {
+  logger.info(`AIZVerse API listening on port ${env.PORT} [${env.NODE_ENV}]`);
+});
 
   const shutdown = (signal: string) => {
     logger.info(`${signal} received, shutting down gracefully`);
