@@ -22,7 +22,7 @@ const rawEnvSchema = z.object({
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().positive().default(4000),
-  CLIENT_ORIGIN: z.string().url().default("http://localhost:3000"),
+  CLIENT_ORIGIN: z.string().url(),
 
   JWT_SECRET: z.string().default("development-jwt-secret-change-me"),
   JWT_EXPIRES_IN: z.string().default("1d"),
@@ -50,7 +50,13 @@ function loadEnv(): Env {
   const envValues = {
     NODE_ENV: parsedEnv.data.NODE_ENV ?? "development",
     PORT: parsedEnv.data.PORT ?? "4000",
-    CLIENT_ORIGIN: parsedEnv.data.CLIENT_ORIGIN ?? "http://localhost:3000",
+    CLIENT_ORIGIN:
+  parsedEnv.data.CLIENT_ORIGIN ??
+  (parsedEnv.data.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : ""),
+    
+
     JWT_SECRET: parsedEnv.data.JWT_SECRET ?? "development-jwt-secret-change-me",
     JWT_EXPIRES_IN: parsedEnv.data.JWT_EXPIRES_IN ?? "1d",
     MONGODB_URI: parsedEnv.data.MONGODB_URI ?? "",
@@ -70,6 +76,9 @@ function loadEnv(): Env {
 
   const normalized = parsed.data;
   const isProd = normalized.NODE_ENV === "production";
+  if (isProd && !normalized.CLIENT_ORIGIN) {
+  throw new Error("CLIENT_ORIGIN must be configured in production.");
+}
   const warnings: string[] = [];
 
   if (!normalized.JWT_SECRET || looksLikePlaceholder(normalized.JWT_SECRET)) {

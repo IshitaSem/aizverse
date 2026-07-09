@@ -1,9 +1,16 @@
 /**
  * Thin, typed fetch wrapper. Centralizing this means: one place to attach
  * auth headers, one place to handle non-2xx responses consistently, and one
- * place to point at a different API base URL per environment.
+ * place to point at a different API base URL per environment. Vite exposes
+ * runtime env vars via import.meta.env, using the VITE_ prefix.
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://aizverse-production.up.railway.app";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!API_BASE_URL) {
+  throw new Error("VITE_API_BASE_URL is not configured");
+}
+
+export default API_BASE_URL;
 
 export class ApiError extends Error {
   constructor(
