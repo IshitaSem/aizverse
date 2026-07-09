@@ -63,12 +63,12 @@ export class GeminiProvider implements AiProvider {
         ...(usage ? { usage } : {}),
       };
    } catch (error) {
-  console.error("Gemini raw error:", error);
+  console.error("FULL GEMINI ERROR:", error);
 
   const errorMessage =
-    error instanceof Error ? error.message : JSON.stringify(error);
+    error instanceof Error ? error.stack : JSON.stringify(error);
 
   throw new Error(`Gemini API call failed: ${errorMessage}`);
-}
   }
+ }
 }
