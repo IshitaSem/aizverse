@@ -5,9 +5,11 @@
  * URL per environment (Vite exposes env vars via import.meta.env, prefixed
  * with VITE_).
  */
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000/api/v1";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export class ApiError extends Error {
+if (!API_BASE_URL) {
+  throw new Error("VITE_API_BASE_URL is not configured");
+}export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string
