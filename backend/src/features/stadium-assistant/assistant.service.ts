@@ -1,5 +1,6 @@
 import type { AiProvider } from "../../lib/ai/provider.interface.js";
 import { getAiProvider } from "../../lib/ai/ai.factory.js";
+import { logger } from "../../config/logger.js";
 import type { AssistantChatRequest } from "./assistant.schema.js";
 
 const LANGUAGE_NAMES: Record<AssistantChatRequest["language"], string> = {
@@ -41,14 +42,23 @@ export async function generateAssistantReply(
 ): Promise<AssistantReply> {
   const systemPrompt = buildSystemPrompt(input.language, input.stadiumId);
 
-  const result = await provider.generate(
-    [
-      { role: "system", content: systemPrompt },
-      ...input.history.map((h) => ({ role: h.role, content: h.content })),
-      { role: "user", content: input.message },
-    ],
-    { temperature: 0.4, maxOutputTokens: 400 }
-  );
+  try {
+    const result = await provider.generate(
+      [
+        { role: "system", content: systemPrompt },
+        ...input.history.map((h) => ({ role: h.role, content: h.content })),
+        { role: "user", content: input.message },
+      ],
+      { temperature: 0.4, maxOutputTokens: 400 }
+    );
 
-  return { reply: result.text.trim(), language: input.language };
+    return { reply: result.text.trim(), language: input.language };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(
+      { error: errorMessage, provider: provider.name, stadiumId: input.stadiumId },
+      "AI provider call failed"
+    );
+    throw error;
+  }
 }

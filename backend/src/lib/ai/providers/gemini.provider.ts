@@ -45,21 +45,27 @@ export class GeminiProvider implements AiProvider {
       throw new Error("At least one user/assistant message is required");
     }
 
-    const chat = model.startChat({ history });
-    const result = await chat.sendMessage(lastMessage.content);
-    const response = result.response;
+    try {
+      const chat = model.startChat({ history });
+      const result = await chat.sendMessage(lastMessage.content);
+      const response = result.response;
 
-    const usage = response.usageMetadata
-      ? {
-          inputTokens: response.usageMetadata.promptTokenCount ?? undefined,
-          outputTokens: response.usageMetadata.candidatesTokenCount ?? undefined,
-        }
-      : undefined;
+      const usage = response.usageMetadata
+        ? {
+            inputTokens: response.usageMetadata.promptTokenCount ?? undefined,
+            outputTokens: response.usageMetadata.candidatesTokenCount ?? undefined,
+          }
+        : undefined;
 
-    return {
-      text: response.text(),
-      provider: this.name,
-      ...(usage ? { usage } : {}),
-    };
+      return {
+        text: response.text(),
+        provider: this.name,
+        ...(usage ? { usage } : {}),
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const err = new Error(`Gemini API call failed: ${errorMessage}`);
+      throw err;
+    }
   }
 }
