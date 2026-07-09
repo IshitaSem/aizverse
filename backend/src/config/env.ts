@@ -47,25 +47,36 @@ function loadEnv(): Env {
     throw new Error("Invalid environment configuration. See details above.");
   }
 
-  const envValues = {
-    NODE_ENV: parsedEnv.data.NODE_ENV ?? "development",
-    PORT: parsedEnv.data.PORT ?? "4000",
-    CLIENT_ORIGIN:
-  parsedEnv.data.CLIENT_ORIGIN ??
-  (parsedEnv.data.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : ""),
-    
+  function defaultEnv(value: string | undefined, fallback: string): string {
+    return value?.trim() ? value : fallback;
+  }
 
-    JWT_SECRET: parsedEnv.data.JWT_SECRET ?? "development-jwt-secret-change-me",
-    JWT_EXPIRES_IN: parsedEnv.data.JWT_EXPIRES_IN ?? "1d",
-    MONGODB_URI: parsedEnv.data.MONGODB_URI ?? "",
-    AI_PROVIDER: parsedEnv.data.AI_PROVIDER ?? "gemini",
-    GEMINI_API_KEY: parsedEnv.data.GEMINI_API_KEY ?? "",
-    GEMINI_MODEL: parsedEnv.data.GEMINI_MODEL ?? "gemini-2.0-flash",
-    RATE_LIMIT_WINDOW_MS: parsedEnv.data.RATE_LIMIT_WINDOW_MS ?? "60000",
-    RATE_LIMIT_MAX_REQUESTS: parsedEnv.data.RATE_LIMIT_MAX_REQUESTS ?? "60",
-  };
+  function normalizePort(value: string | undefined): string {
+    const trimmed = value?.trim();
+    if (!trimmed) return "4000";
+    if (/^\d+$/.test(trimmed)) return trimmed;
+    return "4000";
+  }
+
+  const envValues = {
+  NODE_ENV: parsedEnv.data.NODE_ENV ?? "development",
+  PORT: normalizePort(parsedEnv.data.PORT),
+  CLIENT_ORIGIN: defaultEnv(
+    parsedEnv.data.CLIENT_ORIGIN,
+    parsedEnv.data.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : ""
+  ),
+
+  JWT_SECRET: parsedEnv.data.JWT_SECRET ?? "development-jwt-secret-change-me",
+  JWT_EXPIRES_IN: parsedEnv.data.JWT_EXPIRES_IN ?? "1d",
+  MONGODB_URI: parsedEnv.data.MONGODB_URI ?? "",
+  AI_PROVIDER: parsedEnv.data.AI_PROVIDER ?? "gemini",
+  GEMINI_API_KEY: parsedEnv.data.GEMINI_API_KEY ?? "",
+  GEMINI_MODEL: parsedEnv.data.GEMINI_MODEL ?? "gemini-2.0-flash",
+  RATE_LIMIT_WINDOW_MS: parsedEnv.data.RATE_LIMIT_WINDOW_MS ?? "60000",
+  RATE_LIMIT_MAX_REQUESTS: parsedEnv.data.RATE_LIMIT_MAX_REQUESTS ?? "60",
+};
 
   const parsed = envSchema.safeParse(envValues);
   if (!parsed.success) {
@@ -96,6 +107,9 @@ function loadEnv(): Env {
   }
 
   if (!normalized.GEMINI_API_KEY || looksLikePlaceholder(normalized.GEMINI_API_KEY)) {
+    if (isProd) {
+      throw new Error("GEMINI_API_KEY must be configured with a real value in production.");
+    }
     warnings.push("GEMINI_API_KEY is not configured; the AI assistant will return a graceful fallback message.");
   }
 
