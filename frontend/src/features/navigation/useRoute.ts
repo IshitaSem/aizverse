@@ -25,7 +25,7 @@ const ORIGIN = { lat: 33.7, lng: -84.4 };
  * Backs the "Navigate to" quick links on StadiumMapPage. Mirrors
  * POST /api/v1/navigation/route exactly.
  */
-export function useRoute() {
+export function useRoute(language: string = "en") {
   const { token } = useAuth();
   const [route, setRoute] = useState<RouteResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +44,7 @@ export function useRoute() {
             origin: ORIGIN,
             destination: { label: destinationLabel, coordinates: ORIGIN },
             routeType,
-            language: "en",
+            language: language.toLowerCase(),
           },
         });
         setRoute(result);
@@ -55,7 +55,7 @@ export function useRoute() {
         setIsLoading(false);
       }
     },
-    [token]
+    [token, language]
   );
 
   return { route, findRoute, isLoading, error };

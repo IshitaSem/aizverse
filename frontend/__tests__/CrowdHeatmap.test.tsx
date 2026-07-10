@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { CrowdHeatmap } from "@/features/crowd-intelligence/components/CrowdHeatmap";
+import { CrowdHeatmap } from "@/features/crowd-intelligence/CrowdHeatmap";
 
 const zones = [
   { zoneId: "gate-b", zoneLabel: "Gate B Concourse", densityPercent: 92, capacity: 500, currentCount: 460 },

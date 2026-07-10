@@ -28,6 +28,7 @@ import {
   crowdData, queueData, transportData, carbonData, incidents, volunteerTasks, chatMessages,
 } from "../data/mockData";
 import { useCrowdData } from "../features/crowd-intelligence/useCrowdData";
+import { OperationalSummaryCard } from "../features/crowd-intelligence/OperationalSummaryCard";
 
 // ─── CROWD ANALYTICS ───
 export function CrowdAnalyticsPage({ setPage }: { setPage: (p: Page) => void }) {
@@ -50,34 +51,9 @@ export function CrowdAnalyticsPage({ setPage }: { setPage: (p: Page) => void }) 
         </div>
 
         <motion.div variants={slideUp}>
-          <GlassCard className="p-5" style={{ border: "1px solid rgba(99,102,241,0.2)" }}>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-display text-white font-semibold">AI Operational Summary</h3>
-              <span className="text-xs text-slate-600 font-mono-code">
-                {liveCrowd ? `Updated ${new Date(liveCrowd.generatedAt).toLocaleTimeString()}` : "Live"}
-              </span>
-            </div>
-            {isCrowdLoading && <p className="text-xs text-slate-500 font-mono-code">Loading live crowd data…</p>}
-            {crowdError && <p className="text-xs text-rose-400 font-mono-code">{crowdError}</p>}
-            {liveCrowd && (
-              <>
-                <p className="text-sm text-slate-300 leading-relaxed">{liveCrowd.aiSummary}</p>
-                {liveCrowd.riskZones.length > 0 && (
-                  <p className="text-xs text-amber-400 font-mono-code mt-2">
-                    Congestion risk: {liveCrowd.riskZones.join(", ")}
-                  </p>
-                )}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
-                  {liveCrowd.zones.map((zone) => (
-                    <div key={zone.zoneId} className="glass rounded-lg px-3 py-2">
-                      <div className="text-xs text-slate-500 font-mono-code truncate">{zone.zoneLabel}</div>
-                      <div className="text-sm text-white font-bold">{zone.densityPercent}%</div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </GlassCard>
+          {isCrowdLoading && <p className="text-xs text-slate-500 font-mono-code">Loading live crowd data…</p>}
+          {crowdError && <p className="text-xs text-rose-400 font-mono-code">{crowdError}</p>}
+          {liveCrowd && <OperationalSummaryCard data={liveCrowd} />}
         </motion.div>
 
         <div className="grid grid-cols-12 gap-5">

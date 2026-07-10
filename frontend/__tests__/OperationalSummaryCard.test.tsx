@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { OperationalSummaryCard } from "@/features/crowd-intelligence/components/OperationalSummaryCard";
+import { OperationalSummaryCard } from "@/features/crowd-intelligence/OperationalSummaryCard";
 
 const baseData = {
   stadiumId: "s1",

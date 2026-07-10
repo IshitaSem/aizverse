@@ -112,31 +112,33 @@ export function LoginPage({ setPage }: { setPage: (p: Page) => void }) {
             ))}
           </div>
 
-          <div className="space-y-4">
+          <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1.5 font-mono-code uppercase tracking-wider">Email</label>
+              <label htmlFor="email-input" className="text-xs text-slate-400 font-semibold block mb-1.5 font-mono-code uppercase tracking-wider">Email</label>
               <input
+                id="email-input"
                 value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="you@aizverse.com"
                 className="w-full glass rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 outline-none border border-indigo-500/[0.1] focus:border-indigo-500/40 transition-colors"
               />
             </div>
             <div>
-              <label className="text-xs text-slate-400 font-semibold block mb-1.5 font-mono-code uppercase tracking-wider">Password</label>
+              <label htmlFor="password-input" className="text-xs text-slate-400 font-semibold block mb-1.5 font-mono-code uppercase tracking-wider">Password</label>
               <input
+                id="password-input"
                 type="password" value={password} onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full glass rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 outline-none border border-indigo-500/[0.1] focus:border-indigo-500/40 transition-colors"
               />
             </div>
             <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2 text-slate-500 cursor-pointer hover:text-slate-300 transition-colors">
-                <input type="checkbox" className="rounded" /> Remember me
+              <label htmlFor="remember-me" className="flex items-center gap-2 text-slate-500 cursor-pointer hover:text-slate-300 transition-colors">
+                <input id="remember-me" type="checkbox" className="rounded" /> Remember me
               </label>
               <a href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">Forgot password?</a>
             </div>
 
-            <PremiumButton variant="primary" size="md" onClick={handleLogin} className="w-full justify-center" disabled={loading}>
+            <PremiumButton type="submit" variant="primary" size="md" className="w-full justify-center" disabled={loading}>
               {loading ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
@@ -147,7 +149,7 @@ export function LoginPage({ setPage }: { setPage: (p: Page) => void }) {
               )}
             </PremiumButton>
             {authError && <p className="text-xs text-rose-400 font-mono-code text-center">{authError}</p>}
-          </div>
+          </form>
 
           <div className="relative my-5">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-indigo-500/[0.08]" /></div>
@@ -156,7 +158,7 @@ export function LoginPage({ setPage }: { setPage: (p: Page) => void }) {
 
           <div className="grid grid-cols-2 gap-3">
             {[["G", "Google", "#4285F4"], ["M", "Microsoft", "#00BCF2"]].map(([i, l, c]) => (
-              <motion.button key={l} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              <motion.button key={l} type="button" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 className="flex items-center justify-center gap-2 glass hover:border-indigo-500/25 rounded-xl py-2.5 text-sm text-slate-300 transition-all duration-200">
                 <span className="font-bold text-base" style={{ color: c }}>{i}</span>
                 <span>{l}</span>

@@ -231,7 +231,7 @@ cp frontend/.env.example frontend/.env.local
 ```bash
 # Terminal 1 — API
 cd backend
-npm run dev        # http://localhost:4000
+npm run dev        # https://aizverse-production.up.railway.app
 
 # Terminal 2 — Web app
 cd frontend

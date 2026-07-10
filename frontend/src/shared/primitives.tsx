@@ -95,9 +95,9 @@ export function GlassCard({ children, className = "", glow = false, animate = fa
 }
 
 // ─── PREMIUM BUTTON ───
-export function PremiumButton({ children, onClick, variant = "primary", size = "md", className = "", disabled = false }: {
+export function PremiumButton({ children, onClick, variant = "primary", size = "md", className = "", disabled = false, type = "button" }: {
   children: React.ReactNode; onClick?: () => void; variant?: "primary" | "secondary" | "ghost" | "danger" | "cyan";
-  size?: "sm" | "md" | "lg"; className?: string; disabled?: boolean;
+  size?: "sm" | "md" | "lg"; className?: string; disabled?: boolean; type?: "button" | "submit" | "reset";
 }) {
   const [ripples, setRipples] = useState<{ x: number; y: number; id: number }[]>([]);
 
@@ -124,6 +124,7 @@ export function PremiumButton({ children, onClick, variant = "primary", size = "
 
   return (
     <motion.button
+      type={type}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.97 }}
       onClick={handleClick}

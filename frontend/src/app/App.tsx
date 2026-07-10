@@ -1,23 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Page } from "../types";
 import { pageVariants } from "../shared/animations";
 import { GlobalStyles } from "../shared/GlobalStyles";
 import { ChartGradients } from "../shared/ChartGradients";
 import { AuthProvider, useAuth } from "../lib/auth/AuthContext";
-import { LandingPage } from "../pages/LandingPage";
-import { LoginPage } from "../pages/LoginPage";
-import { FanDashboard } from "../pages/FanDashboard";
-import { OrganizerDashboard } from "../pages/OrganizerDashboard";
-import { VolunteerDashboard } from "../pages/VolunteerDashboard";
-import { SecurityDashboard } from "../pages/SecurityDashboard";
-import { AIChatPage } from "../pages/AIChatPage";
-import { StadiumMapPage } from "../pages/StadiumMapPage";
-import { CrowdAnalyticsPage } from "../pages/CrowdAnalyticsPage";
-import { AccessibilityPage } from "../pages/AccessibilityPage";
-import { TransportPage } from "../pages/TransportPage";
-import { SustainabilityPage } from "../pages/SustainabilityPage";
-import { EmergencyPage } from "../pages/EmergencyPage";
+import { AccessibilityProvider } from "../lib/accessibility/AccessibilityContext";
+
+// Lazy load heavy pages for route‑level code splitting
+const LandingPage = lazy(() => import("../pages/LandingPage").then(m => ({ default: m.LandingPage })));
+const LoginPage = lazy(() => import("../pages/LoginPage").then(m => ({ default: m.LoginPage })));
+const FanDashboard = lazy(() => import("../pages/FanDashboard").then(m => ({ default: m.FanDashboard })));
+const OrganizerDashboard = lazy(() => import("../pages/OrganizerDashboard").then(m => ({ default: m.OrganizerDashboard })));
+const VolunteerDashboard = lazy(() => import("../pages/VolunteerDashboard").then(m => ({ default: m.VolunteerDashboard })));
+const SecurityDashboard = lazy(() => import("../pages/SecurityDashboard").then(m => ({ default: m.SecurityDashboard })));
+const AIChatPage = lazy(() => import("../pages/AIChatPage").then(m => ({ default: m.AIChatPage })));
+const StadiumMapPage = lazy(() => import("../pages/StadiumMapPage").then(m => ({ default: m.StadiumMapPage })));
+const CrowdAnalyticsPage = lazy(() => import("../pages/CrowdAnalyticsPage").then(m => ({ default: m.CrowdAnalyticsPage })));
+const AccessibilityPage = lazy(() => import("../pages/AccessibilityPage").then(m => ({ default: m.AccessibilityPage })));
+const TransportPage = lazy(() => import("../pages/TransportPage").then(m => ({ default: m.TransportPage })));
+const SustainabilityPage = lazy(() => import("../pages/SustainabilityPage").then(m => ({ default: m.SustainabilityPage })));
+const EmergencyPage = lazy(() => import("../pages/EmergencyPage").then(m => ({ default: m.EmergencyPage })));
 
 const PUBLIC_PAGES: Page[] = ["landing", "login"];
 
@@ -61,9 +64,11 @@ function AppShell() {
       <GlobalStyles />
       <ChartGradients />
       <AnimatePresence mode="wait">
-        <motion.div key={page} variants={pageVariants} initial="initial" animate="animate" exit="exit">
-          {pages[page]}
-        </motion.div>
+        <Suspense fallback={<div className="loading-spinner" aria-live="polite">Loading…</div>}>
+          <motion.div key={page} variants={pageVariants} initial="initial" animate="animate" exit="exit">
+            {pages[page]}
+          </motion.div>
+        </Suspense>
       </AnimatePresence>
     </>
   );
@@ -71,8 +76,10 @@ function AppShell() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppShell />
-    </AuthProvider>
+    <AccessibilityProvider>
+      <AuthProvider>
+        <AppShell />
+      </AuthProvider>
+    </AccessibilityProvider>
   );
 }

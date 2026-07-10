@@ -63,7 +63,7 @@ function loadEnv(): Env {
   PORT: normalizePort(parsedEnv.data.PORT),
   CLIENT_ORIGIN: defaultEnv(
     parsedEnv.data.CLIENT_ORIGIN,
-    parsedEnv.data.NODE_ENV === "development"
+    parsedEnv.data.NODE_ENV === "development" || parsedEnv.data.NODE_ENV === "test"
       ? "http://localhost:3000"
       : ""
   ),

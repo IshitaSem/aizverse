@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "motion/react";
+import { useAccessibility } from "../lib/accessibility/AccessibilityContext";
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
@@ -30,9 +31,7 @@ import {
 
 // ─── ACCESSIBILITY ───
 export function AccessibilityPage({ setPage }: { setPage: (p: Page) => void }) {
-  const [fontSize, setFontSize] = useState(16);
-  const [highContrast, setHighContrast] = useState(false);
-  const [toggles, setToggles] = useState<Record<string, boolean>>({});
+  const { fontSize, setFontSize, highContrast, setHighContrast, toggles, setToggles } = useAccessibility();
 
   return (
     <AppLayout page="accessibility" setPage={setPage} title="Accessibility Center" subtitle="WCAG AA Compliant · Inclusive Experience for All Fans">
@@ -50,6 +49,7 @@ export function AccessibilityPage({ setPage }: { setPage: (p: Page) => void }) {
                   <div className="flex items-center gap-3">
                     <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                       onClick={() => setFontSize(f => Math.max(12, f - 2))}
+                      aria-label="Decrease font size"
                       className="w-8 h-8 glass rounded-lg flex items-center justify-center text-white border border-indigo-500/[0.15] hover:border-indigo-500/40 transition-colors">
                       <Minus size={13} />
                     </motion.button>
@@ -59,6 +59,7 @@ export function AccessibilityPage({ setPage }: { setPage: (p: Page) => void }) {
                     </div>
                     <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                       onClick={() => setFontSize(f => Math.min(24, f + 2))}
+                      aria-label="Increase font size"
                       className="w-8 h-8 glass rounded-lg flex items-center justify-center text-white border border-indigo-500/[0.15] hover:border-indigo-500/40 transition-colors">
                       <Plus size={13} />
                     </motion.button>
@@ -70,6 +71,7 @@ export function AccessibilityPage({ setPage }: { setPage: (p: Page) => void }) {
                     <div className="text-xs text-slate-600 font-mono-code">Enhanced visibility mode</div>
                   </div>
                   <motion.button whileTap={{ scale: 0.95 }} onClick={() => setHighContrast(h => !h)}
+                    role="switch" aria-checked={highContrast} aria-label="Toggle high contrast mode"
                     className={`w-12 h-6 rounded-full relative transition-all duration-300 ${highContrast ? "" : ""}`}
                     style={{ background: highContrast ? "linear-gradient(90deg, #6366f1, #4f46e5)" : "rgba(99,102,241,0.15)" }}>
                     <motion.div animate={{ left: highContrast ? "calc(100% - 20px)" : "2px" }}
@@ -101,6 +103,7 @@ export function AccessibilityPage({ setPage }: { setPage: (p: Page) => void }) {
                     </div>
                     <motion.button whileTap={{ scale: 0.95 }}
                       onClick={() => setToggles(t => ({ ...t, [key]: !t[key] }))}
+                      role="switch" aria-checked={toggles[key] || false} aria-label={`Toggle ${label}`}
                       className="w-10 h-5 rounded-full relative transition-all duration-300 flex-shrink-0"
                       style={{ background: toggles[key] ? "linear-gradient(90deg, #6366f1, #4f46e5)" : "rgba(99,102,241,0.12)" }}>
                       <motion.div animate={{ left: toggles[key] ? "calc(100% - 18px)" : "2px" }}

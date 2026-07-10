@@ -28,12 +28,14 @@ import {
   crowdData, queueData, transportData, carbonData, incidents, volunteerTasks, chatMessages,
 } from "../data/mockData";
 import { useRoute } from "../features/navigation/useRoute";
+import { useAccessibility } from "../lib/accessibility/AccessibilityContext";
 
 // ─── STADIUM MAP ───
 export function StadiumMapPage({ setPage }: { setPage: (p: Page) => void }) {
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [layer, setLayer] = useState("density");
-  const { route, findRoute, isLoading: isRouting, error: routeError } = useRoute();
+  const { language } = useAccessibility();
+  const { route, findRoute, isLoading: isRouting, error: routeError } = useRoute(language);
 
   // TODO(API): these six schematic zones (A–F) don't have a defined mapping
   // to the crowd-intelligence service's zoneId scheme yet, so density here

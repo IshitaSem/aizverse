@@ -6,7 +6,7 @@ export const GlobalStyles = () => (
     *::-webkit-scrollbar { width: 4px; height: 4px; }
     *::-webkit-scrollbar-track { background: transparent; }
     *::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); border-radius: 99px; }
-    body { font-family: var(--font-body); background: #030712; }
+    body { font-family: var(--font-body); background: #030712; font-size: var(--body-font-size, 16px); }
     .font-display { font-family: var(--font-display); }
     .font-mono-code { font-family: var(--font-mono); }
 
@@ -164,6 +164,56 @@ export const GlobalStyles = () => (
       background: inherit;
       opacity: 0.5;
       animation: ping-ring 1.5s cubic-bezier(0,0,0.2,1) infinite;
+    }
+
+    .high-contrast body {
+      background: #000000 !important;
+      color: #ffffff !important;
+    }
+    .high-contrast .glass,
+    .high-contrast .glass-bright,
+    .high-contrast .glass-nav,
+    .high-contrast .glass-topnav {
+      background: #000000 !important;
+      border: 2px solid #ffffff !important;
+      color: #ffffff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .high-contrast text,
+    .high-contrast span,
+    .high-contrast p,
+    .high-contrast h1,
+    .high-contrast h2,
+    .high-contrast h3,
+    .high-contrast h4,
+    .high-contrast h5,
+    .high-contrast h6,
+    .high-contrast div {
+      color: #ffffff !important;
+    }
+    .high-contrast input,
+    .high-contrast select,
+    .high-contrast textarea {
+      background: #000000 !important;
+      color: #ffffff !important;
+      border: 2px solid #ffffff !important;
+    }
+    .high-contrast button,
+    .high-contrast a {
+      color: #ffffff !important;
+      border: 2px solid #ffffff !important;
+      background: #000000 !important;
+    }
+    .high-contrast button:hover,
+    .high-contrast a:hover {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+    .high-contrast .badge {
+      background: #000000 !important;
+      border: 2px solid #ffffff !important;
+      color: #ffffff !important;
     }
   `}</style>
 );

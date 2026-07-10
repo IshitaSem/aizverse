@@ -19,7 +19,7 @@ const STADIUM_ID = "stadium-atl-01";
  * backend/src/features/stadium-assistant/assistant.schema.ts) — history is
  * capped to the last 20 turns to match the server-side limit.
  */
-export function useAssistantChat(initialMessages: ChatTurn[]) {
+export function useAssistantChat(initialMessages: ChatTurn[], language: string = "en") {
   const { token } = useAuth();
   const [messages, setMessages] = useState<ChatTurn[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +39,7 @@ export function useAssistantChat(initialMessages: ChatTurn[]) {
         const response = await apiRequest<AssistantChatResponse>("/assistant/chat", {
           method: "POST",
           token,
-          body: { message: trimmed, history, language: "en", stadiumId: STADIUM_ID },
+          body: { message: trimmed, history, language: language.toLowerCase(), stadiumId: STADIUM_ID },
         });
         setMessages((prev) => [...prev, { role: "assistant", text: response.reply }]);
       } catch (err) {
@@ -48,7 +48,7 @@ export function useAssistantChat(initialMessages: ChatTurn[]) {
         setIsLoading(false);
       }
     },
-    [messages, token, isLoading]
+    [messages, token, isLoading, language]
   );
 
   return { messages, sendMessage, isLoading, error };

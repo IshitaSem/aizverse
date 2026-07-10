@@ -1,0 +1,6 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { AlertTriangle, Sparkles } from "lucide-react";
+import { GlassCard } from "../../shared/primitives";
+export function OperationalSummaryCard({ data }) {
+    return (_jsxs(GlassCard, { className: "p-5", style: { border: "1px solid rgba(99,102,241,0.2)" }, children: [_jsxs("div", { className: "mb-3 flex items-center gap-2 text-indigo-400", children: [_jsx(Sparkles, { className: "h-4 w-4", "aria-hidden": "true" }), _jsx("h3", { className: "font-display text-sm uppercase tracking-wide text-white font-semibold", children: "AI operational summary" })] }), _jsx("p", { className: "text-sm leading-relaxed text-slate-300", children: data.aiSummary }), data.riskZones.length > 0 && (_jsxs("div", { className: "mt-4 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3", children: [_jsx(AlertTriangle, { className: "mt-0.5 h-4 w-4 shrink-0 text-amber-400", "aria-hidden": "true" }), _jsxs("p", { className: "text-xs text-amber-400", children: ["Congestion risk: ", data.riskZones.join(", ")] })] })), _jsxs("p", { className: "mt-3 text-[11px] text-slate-500 font-mono-code", children: ["Updated ", new Date(data.generatedAt).toLocaleTimeString()] })] }));
+}

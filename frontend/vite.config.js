@@ -12,4 +12,26 @@ export default defineConfig({
     server: {
         port: 3000,
     },
+    esbuild: {
+        drop: ["console", "debugger"],
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: function (id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('recharts'))
+                            return 'recharts';
+                        if (id.includes('lucide-react'))
+                            return 'lucide-react';
+                        if (id.includes('@motion') || id.includes('framer-motion'))
+                            return 'motion';
+                        return 'vendor';
+                    }
+                },
+            },
+        },
+        // Reduce warning threshold
+        chunkSizeWarningLimit: 600,
+    },
 });

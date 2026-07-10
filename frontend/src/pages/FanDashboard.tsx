@@ -27,20 +27,21 @@ import { AppLayout } from "../shared/layout";
 import {
   crowdData, queueData, transportData, carbonData, incidents, volunteerTasks, chatMessages,
 } from "../data/mockData";
+import { useAssistantChat } from "../features/stadium-assistant/useAssistantChat";
+import { useAccessibility } from "../lib/accessibility/AccessibilityContext";
 
 // ─── FAN DASHBOARD ───
 export function FanDashboard({ setPage }: { setPage: (p: Page) => void }) {
   const [chatOpen, setChatOpen] = useState(false);
   const [msg, setMsg] = useState("");
-  const [messages, setMessages] = useState(chatMessages);
+  const { language } = useAccessibility();
+  const { messages, sendMessage: sendToAssistant, isLoading: isTyping, error } = useAssistantChat(chatMessages, language);
 
   const sendMsg = () => {
     if (!msg.trim()) return;
-    setMessages(m => [...m, { role: "user", text: msg }, {
-      role: "assistant",
-      text: "I'm analyzing real-time stadium data. Based on current conditions, I can help you with directions, wait times, services, and more. What do you need?"
-    }]);
+    const text = msg;
     setMsg("");
+    void sendToAssistant(text);
   };
 
   const quickActions = [
@@ -276,7 +277,7 @@ export function FanDashboard({ setPage }: { setPage: (p: Page) => void }) {
               </div>
               <motion.button whileHover={{ scale: 1.1 }} onClick={() => setChatOpen(false)} className="text-slate-500 hover:text-white transition-colors"><X size={15} /></motion.button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3" role="log" aria-live="polite">
               {messages.map((m, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                   className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -287,19 +288,33 @@ export function FanDashboard({ setPage }: { setPage: (p: Page) => void }) {
                   </div>
                 </motion.div>
               ))}
+              {isTyping && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                  <div className="glass border border-indigo-500/[0.08] px-3 py-2 rounded-xl flex items-center gap-1">
+                    {[0, 1, 2].map(i => (
+                      <motion.div key={i} animate={{ y: [0, -3, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+                        className="w-1 h-1 rounded-full bg-indigo-400" />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+              {error && (
+                <p role="alert" className="text-xs text-rose-400 font-mono-code text-center py-1">{error}</p>
+              )}
             </div>
-            <div className="p-3 border-t border-indigo-500/[0.08]">
+            <form onSubmit={(e) => { e.preventDefault(); sendMsg(); }} className="p-3 border-t border-indigo-500/[0.08]">
               <div className="flex gap-2">
-                <input value={msg} onChange={e => setMsg(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMsg()}
+                <label htmlFor="dashboard-chat-input" className="sr-only">Ask AIZA anything</label>
+                <input id="dashboard-chat-input" value={msg} onChange={e => setMsg(e.target.value)}
                   placeholder="Ask AIZA anything..."
                   className="flex-1 glass border border-indigo-500/[0.1] rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 outline-none focus:border-indigo-500/40 transition-colors" />
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={sendMsg}
+                <motion.button type="submit" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} disabled={isTyping || !msg.trim()}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-colors"
                   style={{ background: "linear-gradient(135deg, #6366f1, #4f46e5)" }}>
                   <Send size={14} />
                 </motion.button>
               </div>
-            </div>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>

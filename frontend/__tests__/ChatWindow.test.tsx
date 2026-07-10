@@ -1,12 +1,20 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ChatWindow } from "@/features/stadium-assistant/components/ChatWindow";
+import { ChatWindow } from "@/features/stadium-assistant/ChatWindow";
 
 vi.mock("@/lib/api/client", async () => {
   const actual = await vi.importActual<typeof import("@/lib/api/client")>("@/lib/api/client");
   return { ...actual, apiRequest: vi.fn().mockResolvedValue({ reply: "Gate B is ahead.", language: "en" }) };
 });
+
+vi.mock("@/lib/auth/AuthContext", () => ({
+  useAuth: () => ({
+    token: "mock-token",
+    user: { id: "u1", name: "Jamie", email: "jamie@aizverse.com", role: "fan" },
+    isAuthenticated: true,
+  }),
+}));
 
 describe("ChatWindow", () => {
   beforeEach(() => vi.clearAllMocks());

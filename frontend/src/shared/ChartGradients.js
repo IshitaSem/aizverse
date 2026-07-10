@@ -1,0 +1,6 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+// Rendered in a hidden SVG outside recharts to avoid the recharts
+// duplicate-key bug (it ignores explicit `key` on <stop>).
+export function ChartGradients() {
+    return (_jsx("svg", { width: "0", height: "0", style: { position: "absolute", pointerEvents: "none" }, "aria-hidden": "true", children: _jsxs("defs", { children: [_jsxs("linearGradient", { id: "heroGrad", x1: "0", y1: "0", x2: "0", y2: "1", children: [_jsx("stop", { offset: "0%", stopColor: "#6366f1", stopOpacity: 0.3 }), _jsx("stop", { offset: "100%", stopColor: "#6366f1", stopOpacity: 0 })] }), _jsxs("linearGradient", { id: "crowd1", x1: "0", y1: "0", x2: "0", y2: "1", children: [_jsx("stop", { offset: "0%", stopColor: "#6366f1", stopOpacity: 0.2 }), _jsx("stop", { offset: "100%", stopColor: "#6366f1", stopOpacity: 0 })] }), _jsxs("linearGradient", { id: "a1", x1: "0", y1: "0", x2: "0", y2: "1", children: [_jsx("stop", { offset: "0%", stopColor: "#6366f1", stopOpacity: 0.25 }), _jsx("stop", { offset: "100%", stopColor: "#6366f1", stopOpacity: 0 })] }), _jsxs("linearGradient", { id: "a2", x1: "0", y1: "0", x2: "0", y2: "1", children: [_jsx("stop", { offset: "0%", stopColor: "#06b6d4", stopOpacity: 0.15 }), _jsx("stop", { offset: "100%", stopColor: "#06b6d4", stopOpacity: 0 })] })] }) }));
+}

@@ -1,11 +1,19 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { useAssistantChat } from "@/features/stadium-assistant/hooks/useAssistantChat";
+import { useAssistantChat } from "@/features/stadium-assistant/useAssistantChat";
 
 vi.mock("@/lib/api/client", async () => {
   const actual = await vi.importActual<typeof import("@/lib/api/client")>("@/lib/api/client");
   return { ...actual, apiRequest: vi.fn() };
 });
+
+vi.mock("@/lib/auth/AuthContext", () => ({
+  useAuth: () => ({
+    token: "mock-token",
+    user: { id: "u1", name: "Jamie", email: "jamie@aizverse.com", role: "fan" },
+    isAuthenticated: true,
+  }),
+}));
 
 import { apiRequest } from "@/lib/api/client";
 
@@ -16,7 +24,7 @@ describe("useAssistantChat", () => {
 
   it("optimistically appends the user message before the response arrives", async () => {
     vi.mocked(apiRequest).mockResolvedValueOnce({ reply: "Gate B is ahead.", language: "en" });
-    const { result } = renderHook(() => useAssistantChat({ stadiumId: "s1", language: "en" }));
+    const { result } = renderHook(() => useAssistantChat([], "en"));
 
     act(() => {
       void result.current.sendMessage("How do I reach Gate B?");
@@ -26,11 +34,11 @@ describe("useAssistantChat", () => {
     expect(result.current.messages[0]?.role).toBe("user");
 
     await waitFor(() => expect(result.current.messages).toHaveLength(2));
-    expect(result.current.messages[1]?.content).toBe("Gate B is ahead.");
+    expect(result.current.messages[1]?.text).toBe("Gate B is ahead.");
   });
 
   it("ignores empty/whitespace-only input", async () => {
-    const { result } = renderHook(() => useAssistantChat({ stadiumId: "s1", language: "en" }));
+    const { result } = renderHook(() => useAssistantChat([], "en"));
 
     await act(async () => {
       await result.current.sendMessage("   ");
@@ -44,7 +52,7 @@ describe("useAssistantChat", () => {
     const { ApiError } = await import("@/lib/api/client");
     vi.mocked(apiRequest).mockRejectedValueOnce(new ApiError(500, "AI service unavailable"));
 
-    const { result } = renderHook(() => useAssistantChat({ stadiumId: "s1", language: "en" }));
+    const { result } = renderHook(() => useAssistantChat([], "en"));
 
     await act(async () => {
       await result.current.sendMessage("hello");
