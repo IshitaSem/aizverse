@@ -12,11 +12,11 @@ import { useAuth } from "../lib/auth/AuthContext";
 // ─── SIDEBAR ───
 export const navItems = [
   { id: "fan", label: "Fan Dashboard", icon: Home },
-  { id: "organizer", label: "Organizer", icon: BarChart2 },
+  { id: "organizer", label: "Operations Center", icon: BarChart2 },
   { id: "volunteer", label: "Volunteer", icon: UserCheck },
   { id: "security", label: "Security", icon: Shield },
-  { id: "analytics", label: "Analytics", icon: Activity },
-  { id: "map", label: "Stadium Map", icon: Map },
+  { id: "analytics", label: "Crowd Intelligence", icon: Activity },
+  { id: "map", label: "Navigation", icon: Map },
   { id: "chat", label: "AI Assistant", icon: MessageSquare },
   { id: "transport", label: "Transport Hub", icon: Train },
   { id: "sustainability", label: "Sustainability", icon: Leaf },
@@ -196,10 +196,17 @@ export function AppLayout({ page, setPage, title, subtitle, children }: {
 
   return (
     <div className="min-h-screen relative" style={{ fontFamily: "var(--font-body)" }}>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-indigo-500 focus:px-4 focus:py-2 focus:text-white"
+      >
+        Skip to main content
+      </a>
       <AnimatedBackground />
       <Sidebar page={page} setPage={setPage} collapsed={collapsed} setCollapsed={setCollapsed} />
       <TopNav title={title} subtitle={subtitle} collapsed={collapsed} />
       <motion.main
+        id="main-content"
         animate={{ paddingLeft: collapsed ? 64 : 240 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className="min-h-screen pt-20 relative z-10"

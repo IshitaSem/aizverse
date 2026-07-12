@@ -27,7 +27,7 @@ import { AppLayout } from "../shared/layout";
 import {
   crowdData, queueData, transportData, carbonData, incidents, volunteerTasks, chatMessages,
 } from "../data/mockData";
-import { useAssistantChat } from "../features/stadium-assistant/useAssistantChat";
+import { useAssistantChat, toAssistantLanguage } from "../features/stadium-assistant/useAssistantChat";
 import { useAccessibility } from "../lib/accessibility/AccessibilityContext";
 
 // ─── FAN DASHBOARD ───
@@ -35,7 +35,7 @@ export function FanDashboard({ setPage }: { setPage: (p: Page) => void }) {
   const [chatOpen, setChatOpen] = useState(false);
   const [msg, setMsg] = useState("");
   const { language } = useAccessibility();
-  const { messages, sendMessage: sendToAssistant, isLoading: isTyping, error } = useAssistantChat(chatMessages, language);
+  const { messages, sendMessage: sendToAssistant, isLoading: isTyping, error } = useAssistantChat(chatMessages, toAssistantLanguage(language));
 
   const sendMsg = () => {
     if (!msg.trim()) return;

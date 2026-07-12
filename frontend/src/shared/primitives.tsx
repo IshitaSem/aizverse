@@ -3,24 +3,47 @@ import { motion, useInView } from "motion/react";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { itemVariants } from "./animations";
 
+// ─── SHARED COLOR TOKENS ───
+// Single source of truth for the accent colors used across Badge and
+// KpiCard, so a palette change doesn't need to be made in two places.
+export type AccentColor = "indigo" | "cyan" | "green" | "amber" | "red" | "purple" | "slate";
+
+const ACCENT_HEX: Record<AccentColor, string> = {
+  indigo: "99,102,241",
+  cyan: "6,182,212",
+  green: "16,185,129",
+  amber: "245,158,11",
+  red: "239,68,68",
+  purple: "168,85,247",
+  slate: "100,116,139",
+};
+
 // ─── LOADING SKELETON ───
 export function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`shimmer-skeleton rounded-xl ${className}`} />;
 }
 
 // ─── BADGE ───
-export function Badge({ children, color = "indigo" }: { children: React.ReactNode; color?: string }) {
-  const styles: Record<string, string> = {
-    indigo: "bg-indigo-500/10 text-indigo-300 border-indigo-500/20",
-    cyan: "bg-cyan-500/10 text-cyan-300 border-cyan-500/20",
-    green: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
-    amber: "bg-amber-500/10 text-amber-300 border-amber-500/20",
-    red: "bg-red-500/10 text-red-300 border-red-500/20",
-    purple: "bg-purple-500/10 text-purple-300 border-purple-500/20",
-    slate: "bg-slate-500/10 text-slate-400 border-slate-500/20",
-  };
+export type BadgeColor = AccentColor;
+
+const BADGE_TEXT_CLASS: Record<BadgeColor, string> = {
+  indigo: "text-indigo-300",
+  cyan: "text-cyan-300",
+  green: "text-emerald-300",
+  amber: "text-amber-300",
+  red: "text-red-300",
+  purple: "text-purple-300",
+  slate: "text-slate-400",
+};
+
+export function Badge({ children, color = "indigo" }: { children: React.ReactNode; color?: BadgeColor }) {
+  const rgb = ACCENT_HEX[color] ?? ACCENT_HEX.indigo;
+  const textClass = BADGE_TEXT_CLASS[color] ?? BADGE_TEXT_CLASS.indigo;
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${styles[color] || styles.indigo}`}>
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${textClass}`}
+      style={{ background: `rgba(${rgb},0.1)`, borderColor: `rgba(${rgb},0.2)` }}
+    >
       {children}
     </span>
   );
@@ -28,19 +51,11 @@ export function Badge({ children, color = "indigo" }: { children: React.ReactNod
 
 // ─── KPI CARD ───
 export function KpiCard({ label, value, change, icon: Icon, color = "indigo", sub }: {
-  label: string; value: string; change?: string; icon: React.ElementType; color?: string; sub?: string;
+  label: string; value: string; change?: string; icon: React.ElementType; color?: AccentColor; sub?: string;
 }) {
   const isPositive = change?.startsWith("+");
-  const colorMap: Record<string, { bg: string; text: string; glow: string }> = {
-    indigo: { bg: "bg-indigo-500/10", text: "text-indigo-400", glow: "shadow-indigo-500/20" },
-    cyan: { bg: "bg-cyan-500/10", text: "text-cyan-400", glow: "shadow-cyan-500/20" },
-    green: { bg: "bg-emerald-500/10", text: "text-emerald-400", glow: "shadow-emerald-500/20" },
-    amber: { bg: "bg-amber-500/10", text: "text-amber-400", glow: "shadow-amber-500/20" },
-    red: { bg: "bg-red-500/10", text: "text-red-400", glow: "shadow-red-500/20" },
-    purple: { bg: "bg-purple-500/10", text: "text-purple-400", glow: "shadow-purple-500/20" },
-  };
-  const c = colorMap[color] ?? colorMap.indigo;
-  const iconClasses = c ? `${c.bg} ${c.text}` : "bg-indigo-500/10 text-indigo-400";
+  const rgb = ACCENT_HEX[color] ?? ACCENT_HEX.indigo;
+  const textClass = BADGE_TEXT_CLASS[color] ?? BADGE_TEXT_CLASS.indigo;
 
   return (
     <motion.div
@@ -53,7 +68,10 @@ export function KpiCard({ label, value, change, icon: Icon, color = "indigo", su
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ background: "linear-gradient(180deg, rgba(99,102,241,0.03) 0%, transparent 100%)" }} />
       <div className="flex items-start justify-between mb-4">
-        <div className={`w-10 h-10 rounded-xl ${iconClasses} flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}>
+        <div
+          className={`w-10 h-10 rounded-xl ${textClass} flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}
+          style={{ background: `rgba(${rgb},0.1)` }}
+        >
           <Icon size={18} />
         </div>
         {change && (
@@ -95,10 +113,20 @@ export function GlassCard({ children, className = "", glow = false, animate = fa
 }
 
 // ─── PREMIUM BUTTON ───
-export function PremiumButton({ children, onClick, variant = "primary", size = "md", className = "", disabled = false, type = "button" }: {
-  children: React.ReactNode; onClick?: () => void; variant?: "primary" | "secondary" | "ghost" | "danger" | "cyan";
-  size?: "sm" | "md" | "lg"; className?: string; disabled?: boolean; type?: "button" | "submit" | "reset";
-}) {
+interface PremiumButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "cyan";
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  disabled?: boolean;
+  /** Standard HTML button type — defaults to "button" so it's never accidentally a form submit. */
+  type?: "button" | "submit" | "reset";
+}
+
+export function PremiumButton({
+  children, onClick, variant = "primary", size = "md", className = "", disabled = false, type = "button",
+}: PremiumButtonProps) {
   const [ripples, setRipples] = useState<{ x: number; y: number; id: number }[]>([]);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -141,14 +169,16 @@ export function PremiumButton({ children, onClick, variant = "primary", size = "
 }
 
 // ─── SEVERITY DOT ───
-export function SeverityDot({ severity }: { severity: string }) {
-  const c: Record<string, string> = {
+export type Severity = "high" | "medium" | "low";
+
+export function SeverityDot({ severity }: { severity: Severity }) {
+  const c: Record<Severity, string> = {
     high: "bg-red-500",
     medium: "bg-amber-500",
     low: "bg-emerald-500",
   };
   return (
-    <span className={`relative inline-block w-2 h-2 rounded-full ${c[severity] || "bg-slate-500"}`}>
+    <span className={`relative inline-block w-2 h-2 rounded-full ${c[severity]}`}>
       {severity === "high" && (
         <span className="absolute inset-0 rounded-full animate-ping opacity-60" style={{ background: "rgba(239,68,68,0.6)" }} />
       )}

@@ -33,8 +33,3 @@ export function getAiProvider(): AiProvider {
       return cachedProvider;
   }
 }
-
-/** Test-only helper to inject a fake provider without touching env vars. */
-export function __setAiProviderForTests(provider: AiProvider | null): void {
-  cachedProvider = provider;
-}

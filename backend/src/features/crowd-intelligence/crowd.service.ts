@@ -54,9 +54,10 @@ export async function generateCrowdIntelligence(
       {
         role: "system",
         content:
-          "You are an operations analyst for a FIFA World Cup stadium. Given zone-by-zone crowd density " +
-          "data, write a concise operational summary (max 4 sentences) for organizers: call out congestion " +
-          "risks, suggest concrete actions (e.g. open an alternate gate, deploy volunteers), and stay factual " +
+          "You are an operations analyst for a Smart Stadium & Tournament Operations platform at a " +
+          "FIFA World Cup stadium. Given zone-by-zone crowd density data, write a concise operational " +
+          "summary (max 4 sentences) for organizers and security staff: call out congestion risks, " +
+          "suggest concrete actions (e.g. open an alternate gate, deploy volunteers), and stay factual " +
           "— never invent data not present in the input.",
       },
       { role: "user", content: `Stadium: ${stadiumId}\nZone readings:\n${zoneLines}` },

@@ -53,9 +53,10 @@ export async function generateRoute(
       {
         role: "system",
         content:
-          "You are a wayfinding narrator for a FIFA World Cup stadium app. Given a raw list of route " +
-          "steps, write a short, warm, easy-to-follow walking summary (2-3 sentences) in the requested " +
-          "language. Do not invent distances or landmarks beyond what is given.",
+          "You are a wayfinding narrator for a Smart Stadium & Tournament Operations platform at a " +
+          "FIFA World Cup stadium. Given a raw list of route steps, write a short, warm, easy-to-follow " +
+          "walking summary (2-3 sentences) in the requested language. Do not invent distances or " +
+          "landmarks beyond what is given.",
       },
       {
         role: "user",

@@ -27,11 +27,13 @@ import { AppLayout } from "../shared/layout";
 import {
   crowdData, queueData, transportData, carbonData, incidents, volunteerTasks, chatMessages,
 } from "../data/mockData";
+import { useCrowdData } from "../features/crowd-intelligence/useCrowdData";
 
 // ─── ORGANIZER DASHBOARD ───
 export function OrganizerDashboard({ setPage }: { setPage: (p: Page) => void }) {
+  const { data: liveCrowd, isLoading: isCrowdLoading, error: crowdError } = useCrowdData();
   return (
-    <AppLayout page="organizer" setPage={setPage} title="Operations Center" subtitle="Lusail Stadium · Match Day 22 · Commander View">
+    <AppLayout page="organizer" setPage={setPage} title="Smart Stadium Operations Center" subtitle="Lusail Stadium · Match Day 22 · Tournament Operations">
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-5">
 
         {/* KPIs */}
@@ -118,7 +120,10 @@ export function OrganizerDashboard({ setPage }: { setPage: (p: Page) => void }) 
             </GlassCard>
           </motion.div>
 
-          {/* AI Summary */}
+          {/* AI Summary — real data from GET /api/v1/crowd/summary, same
+              endpoint that powers Crowd Analytics. Reused here rather than
+              duplicated so stadium managers see it on their primary
+              dashboard, not just a secondary analytics page. */}
           <motion.div variants={slideUp} className="col-span-12 md:col-span-6">
             <GlassCard className="p-5 h-full">
               <div className="flex items-center gap-2 mb-4">
@@ -126,23 +131,45 @@ export function OrganizerDashboard({ setPage }: { setPage: (p: Page) => void }) 
                   <Zap size={13} className="text-white" />
                 </div>
                 <h3 className="font-display text-white font-semibold">AI Operational Summary</h3>
-                <LiveBadge />
+                {liveCrowd && <LiveBadge />}
               </div>
-              <div className="space-y-2.5">
-                {[
-                  { color: "#6366f1", text: "Gate C experiencing 25% above-normal queue. Recommend opening auxiliary lanes immediately." },
-                  { color: "#f59e0b", text: "Medical team response time averaging 3.2 min — within protocol. Section F flagged." },
-                  { color: "#10b981", text: "Transportation modal split optimal. 42% metro usage reducing parking pressure." },
-                  { color: "#8b5cf6", text: "Predict 91,200 peak attendance at 18:15. Initiate overflow seating protocol by 17:45." },
-                ].map(({ color, text }, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
+
+              {isCrowdLoading && (
+                <p className="text-xs text-slate-500 font-mono-code">Loading live operational data…</p>
+              )}
+              {crowdError && (
+                <p className="text-xs text-rose-400 font-mono-code" role="alert">{crowdError}</p>
+              )}
+
+              {liveCrowd && (
+                <div className="space-y-2.5">
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                     className="flex gap-3 p-3 rounded-xl text-sm"
-                    style={{ background: `${color}08`, border: `1px solid ${color}18` }}>
-                    <div className="w-1 h-full rounded-full flex-shrink-0 mt-0.5" style={{ background: color, minHeight: 14, width: 3 }} />
-                    <span className="text-slate-400">{text}</span>
+                    style={{ background: "#6366f108", border: "1px solid #6366f118" }}>
+                    <div className="w-1 h-full rounded-full flex-shrink-0 mt-0.5" style={{ background: "#6366f1", minHeight: 14, width: 3 }} />
+                    <span className="text-slate-400">{liveCrowd.aiSummary}</span>
                   </motion.div>
-                ))}
-              </div>
+
+                  {liveCrowd.riskZones.map((zoneLabel, i) => (
+                    <motion.div key={zoneLabel} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (i + 1) * 0.1 }}
+                      className="flex gap-3 p-3 rounded-xl text-sm"
+                      style={{ background: "#f59e0b08", border: "1px solid #f59e0b18" }}>
+                      <div className="w-1 h-full rounded-full flex-shrink-0 mt-0.5" style={{ background: "#f59e0b", minHeight: 14, width: 3 }} />
+                      <span className="text-slate-400">Congestion risk: {zoneLabel} is above 80% capacity.</span>
+                    </motion.div>
+                  ))}
+
+                  {liveCrowd.riskZones.length === 0 && (
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
+                      className="flex gap-3 p-3 rounded-xl text-sm"
+                      style={{ background: "#10b98108", border: "1px solid #10b98118" }}>
+                      <div className="w-1 h-full rounded-full flex-shrink-0 mt-0.5" style={{ background: "#10b981", minHeight: 14, width: 3 }} />
+                      <span className="text-slate-400">All monitored zones within normal operating capacity.</span>
+                    </motion.div>
+                  )}
+                </div>
+              )}
             </GlassCard>
           </motion.div>
         </div>

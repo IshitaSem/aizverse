@@ -1,11 +1,11 @@
 import { useState, type FormEvent, useRef, useEffect } from "react";
 import { Send, Mic, User, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { useAssistantChat, type ChatTurn } from "./useAssistantChat";
+import { useAssistantChat, type ChatTurn, type AssistantLanguage } from "./useAssistantChat";
 
 interface ChatWindowProps {
   stadiumId: string;
-  language?: string;
+  language?: AssistantLanguage;
 }
 
 const SUGGESTIONS = ["How do I reach Gate B?", "Where's the nearest accessible restroom?", "Shortest food queue?"];

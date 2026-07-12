@@ -28,35 +28,51 @@ import {
   crowdData, queueData, transportData, carbonData, incidents, volunteerTasks, chatMessages,
 } from "../data/mockData";
 import { useRoute } from "../features/navigation/useRoute";
-import { useAccessibility } from "../lib/accessibility/AccessibilityContext";
+import { useCrowdData } from "../features/crowd-intelligence/useCrowdData";
 
 // ─── STADIUM MAP ───
 export function StadiumMapPage({ setPage }: { setPage: (p: Page) => void }) {
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [layer, setLayer] = useState("density");
-  const { language } = useAccessibility();
-  const { route, findRoute, isLoading: isRouting, error: routeError } = useRoute(language);
+  const { route, findRoute, isLoading: isRouting, error: routeError } = useRoute();
+  const { data: liveCrowd } = useCrowdData();
 
-  // TODO(API): these six schematic zones (A–F) don't have a defined mapping
-  // to the crowd-intelligence service's zoneId scheme yet, so density here
-  // stays mock/demo data until that mapping is defined. Do not silently
-  // wire this to /api/v1/crowd/summary without agreeing that mapping first —
-  // it would show real numbers next to fabricated zone labels.
-  const zones = [
-    { id: "A", x: 25, y: 30, density: "high" },
-    { id: "B", x: 50, y: 15, density: "medium" },
-    { id: "C", x: 75, y: 30, density: "critical" },
-    { id: "D", x: 75, y: 60, density: "medium" },
-    { id: "E", x: 50, y: 75, density: "low" },
-    { id: "F", x: 25, y: 60, density: "high" },
+  type ZoneDensity = "low" | "medium" | "high" | "critical";
+
+  function bucketDensity(percent: number): ZoneDensity {
+    if (percent >= 90) return "critical";
+    if (percent >= 70) return "high";
+    if (percent >= 40) return "medium";
+    return "low";
+  }
+
+  // Demo/fallback layout — used whenever live crowd data isn't available:
+  // fan and volunteer accounts correctly can't reach
+  // GET /api/v1/crowd/summary (staff/security/organizer only), and the
+  // live feed may simply still be loading. The map stays fully usable
+  // either way; only the density values are real when they can be.
+  // zoneId matches backend/src/scripts/seedCrowdData.ts (zone-a..zone-f)
+  // so demo data lines up with these six schematic areas one-to-one.
+  const FALLBACK_ZONES: { id: string; zoneId: string; x: number; y: number; density: ZoneDensity }[] = [
+    { id: "A", zoneId: "zone-a", x: 25, y: 30, density: "high" },
+    { id: "B", zoneId: "zone-b", x: 50, y: 15, density: "medium" },
+    { id: "C", zoneId: "zone-c", x: 75, y: 30, density: "critical" },
+    { id: "D", zoneId: "zone-d", x: 75, y: 60, density: "medium" },
+    { id: "E", zoneId: "zone-e", x: 50, y: 75, density: "low" },
+    { id: "F", zoneId: "zone-f", x: 25, y: 60, density: "high" },
   ];
 
-  const densityColor: Record<string, string> = {
+  const zones = FALLBACK_ZONES.map((zone) => {
+    const live = liveCrowd?.zones.find((z) => z.zoneId === zone.zoneId);
+    return live ? { ...zone, density: bucketDensity(live.densityPercent) } : zone;
+  });
+
+  const densityColor: Record<ZoneDensity, string> = {
     critical: "#ef4444", high: "#f59e0b", medium: "#eab308", low: "#10b981",
   };
 
   return (
-    <AppLayout page="map" setPage={setPage} title="Interactive Stadium Map" subtitle="Lusail Iconic Stadium · Live Density Overlay">
+    <AppLayout page="map" setPage={setPage} title="AI Stadium Navigation" subtitle="Lusail Iconic Stadium · Live Density Overlay">
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-12 gap-5">
 
         <motion.div variants={slideUp} className="col-span-12 md:col-span-8">
@@ -91,6 +107,8 @@ export function StadiumMapPage({ setPage }: { setPage: (p: Page) => void }) {
                 <motion.button key={zone.id}
                   whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedZone(zone.id === selectedZone ? null : zone.id)}
+                  aria-label={`Zone ${zone.id}, ${zone.density} crowd density`}
+                  aria-pressed={selectedZone === zone.id}
                   style={{ left: `${zone.x}%`, top: `${zone.y}%`, transform: "translate(-50%,-50%)", background: densityColor[zone.density] }}
                   className={`absolute w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold font-display transition-all ${selectedZone === zone.id ? "ring-2 ring-white shadow-lg" : ""}`}
                   animate={selectedZone === zone.id ? { boxShadow: `0 0 20px ${densityColor[zone.density]}80` } : {}}

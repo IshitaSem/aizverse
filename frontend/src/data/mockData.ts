@@ -57,7 +57,10 @@ export const carbonData = [
   { day: "Sun", score: 84 },
 ];
 
-export const incidents = [
+export const incidents: {
+  id: string; type: string; location: string;
+  severity: "high" | "medium" | "low"; time: string; status: string;
+}[] = [
   { id: "INC-001", type: "Medical", location: "Section C, Row 12", severity: "high", time: "16:42", status: "responding" },
   { id: "INC-002", type: "Crowd Surge", location: "Gate A Plaza", severity: "medium", time: "16:38", status: "monitoring" },
   { id: "INC-003", type: "Lost Child", location: "Fan Zone 3", severity: "medium", time: "16:31", status: "resolved" },
