@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { apiRequest, ApiError } from "../../lib/api/client";
 import { useAuth } from "../../lib/auth/AuthContext";
+import { DEFAULT_STADIUM_ID as STADIUM_ID } from "../../shared/constants";
 
 export interface CrowdZone {
   zoneId: string;
@@ -18,7 +19,6 @@ export interface CrowdIntelligence {
   generatedAt: string;
 }
 
-const STADIUM_ID = "stadium-atl-01";
 const REFRESH_MS = 30_000;
 
 /**

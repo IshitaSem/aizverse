@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { apiRequest, ApiError } from "../../lib/api/client";
 import { useAuth } from "../../lib/auth/AuthContext";
+import { DEFAULT_STADIUM_ID as STADIUM_ID } from "../../shared/constants";
 
 export interface ChatTurn {
   role: "user" | "assistant";
@@ -30,8 +31,6 @@ export function toAssistantLanguage(value: string): AssistantLanguage {
     ? (normalized as AssistantLanguage)
     : "en";
 }
-
-const STADIUM_ID = "stadium-atl-01";
 
 /**
  * Backs AIChatPage. Mirrors POST /api/v1/assistant/chat exactly (see

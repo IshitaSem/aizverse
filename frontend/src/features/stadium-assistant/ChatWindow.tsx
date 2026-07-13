@@ -4,13 +4,12 @@ import { motion, AnimatePresence } from "motion/react";
 import { useAssistantChat, type ChatTurn, type AssistantLanguage } from "./useAssistantChat";
 
 interface ChatWindowProps {
-  stadiumId: string;
   language?: AssistantLanguage;
 }
 
 const SUGGESTIONS = ["How do I reach Gate B?", "Where's the nearest accessible restroom?", "Shortest food queue?"];
 
-export function ChatWindow({ stadiumId, language = "en" }: ChatWindowProps) {
+export function ChatWindow({ language = "en" }: ChatWindowProps) {
   const initialMessages: ChatTurn[] = [];
   const { messages, sendMessage, isLoading, error } = useAssistantChat(initialMessages, language);
   const [draft, setDraft] = useState("");

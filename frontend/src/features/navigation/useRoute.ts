@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { apiRequest, ApiError } from "../../lib/api/client";
 import { useAuth } from "../../lib/auth/AuthContext";
+import { DEFAULT_STADIUM_ID as STADIUM_ID } from "../../shared/constants";
 
 export interface RouteStep {
   instruction: string;
@@ -15,7 +16,6 @@ export interface RouteResult {
   estimatedMinutes: number;
 }
 
-const STADIUM_ID = "stadium-atl-01";
 // The schematic stadium map doesn't carry real geo-coordinates for the
 // visitor's current position; center-of-venue is used as a stand-in origin
 // until the map is backed by real indoor positioning.

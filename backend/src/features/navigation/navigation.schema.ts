@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { assistantLanguageSchema } from "../../lib/validation/language.schema.js";
 
 export const coordinateSchema = z.object({
   lat: z.number().min(-90).max(90),
@@ -13,7 +14,7 @@ export const routeRequestSchema = z.object({
     coordinates: coordinateSchema,
   }),
   routeType: z.enum(["fastest", "accessible", "least_crowded"]).default("fastest"),
-  language: z.enum(["en", "es", "fr", "ar", "hi", "pt"]).default("en"),
+  language: assistantLanguageSchema,
 });
 
 export type RouteRequest = z.infer<typeof routeRequestSchema>;

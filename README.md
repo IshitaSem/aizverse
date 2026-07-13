@@ -109,7 +109,7 @@ claimed until they're real:
 | Crowd Management | ✅ Implemented | `useCrowdData` → real-time zone density + AI operational summary, shown on both Operations Center and Crowd Intelligence. `npm run seed:crowd` populates demo data |
 | Operational Intelligence | ✅ Implemented | Same crowd-intelligence pipeline, framed for organizer/security decision-making |
 | Real-time Decision Support | ✅ Implemented | Risk-zone flags + AI-suggested actions (e.g. "open Gate D as overflow"), refreshed every 30s |
-| Accessibility | ⬜ UI only | `AccessibilityPage` exists with WCAG-oriented copy; not yet backed by a dedicated accessibility API |
+| Accessibility | ✅ Implemented | `AccessibilityPage` is backed by `AccessibilityContext` — font size, high contrast, and toggle preferences are real app state, persisted to `localStorage` |
 | Transportation | ⬜ UI only | `TransportPage` exists; not yet backed by a live transit/parking API |
 | Sustainability | ⬜ UI only | `SustainabilityPage` exists; not yet backed by real carbon/waste data |
 | Multilingual Assistance | ✅ Implemented | The language selector on the AI Stadium Assistant sends the selected language (en/es/fr/ar/hi/pt) through to Gemini, which is instructed to always respond in it |
@@ -265,6 +265,8 @@ UI updates, loading/error states, and the 30-second crowd-data polling behavior.
 
 ## Accessibility
 
+- User-controlled font size, high-contrast mode, and other toggles via `AccessibilityContext`,
+  persisted to `localStorage` and applied app-wide — not just a static settings-looking page.
 - Skip-to-content link and a `<main>` landmark on every authenticated page (`AppLayout`).
 - The chat conversation is an `aria-live="polite"` log — new assistant replies are announced,
   not just visually appended.
@@ -274,7 +276,7 @@ UI updates, loading/error states, and the 30-second crowd-data polling behavior.
   state via `aria-pressed`, not color alone.
 - Visible focus rings (`focus-visible:outline`) tuned for contrast against the dark theme.
 
-This is an honest partial pass, not a full WCAG AA audit — the 9 pages without a wired backend
+This is an honest partial pass, not a full WCAG AA audit — the pages without a wired backend
 also don't yet have full accessibility semantics. Extending this pattern (skip links, live
 regions, labeled controls) to those pages is straightforward follow-up work, not a redesign.
 
